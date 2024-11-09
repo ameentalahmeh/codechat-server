@@ -7,6 +7,9 @@ from together_ai import process_prompt
 @dataclass
 class PromptRequest:
     prompt: str
+    model: str = "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
+    # model: str = "codellama/CodeLlama-34b-Instruct-hf"
+    # model: str = "codellama/CodeLlama-7b-hf"
 
 app = FastAPI()
 
