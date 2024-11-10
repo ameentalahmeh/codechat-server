@@ -25,7 +25,7 @@ The Code Chat Server is a FastAPI-based backend designed to integrate with Toget
 
 ## Requirements
 
-- Python 3.8 or higher
+- Python 3.9 or higher
 - FastAPI, Together AI Llama SDK, dotenv, langdetect, and other dependencies listed in `requirements.txt`
 
 ## Setup Instructions
@@ -33,17 +33,39 @@ The Code Chat Server is a FastAPI-based backend designed to integrate with Toget
 1. **Clone the Repository**:
 
    ```bash
-   git clone git remote add origin git@github.com:ameentalahmeh/codechat-server.git
+   git clone git@github.com:ameentalahmeh/codechat-server.git
    cd codechat-server
    ```
 
-2. **Install Dependencies**:
+2. **Create a virtual environment**:
+
+   In the **Code Chat Server** directory, create a virtual environment:
+
+   ```bash
+   python -m venv .venv
+   ```
+
+3. **Activate the virtual environment**:
+
+   - On macOS/Linux:
+     ```bash
+     source .venv/bin/activate
+     ```
+
+   - On Windows:
+     ```bash
+     .venv\Scripts\activate
+     ```
+
+4. **Install the dependencies**:
+
+   After activating the virtual environment, install the required Python dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Configure Environment Variables**:
+5. **Configure Environment Variables**:
 
    Copy `dist.env` to `.env` and update `TOGETHER_API_KEY` with your API key.
 
@@ -51,7 +73,7 @@ The Code Chat Server is a FastAPI-based backend designed to integrate with Toget
    cp dist.env .env
    ```
 
-4. **Start the Server**:
+6. **Start the Server**:
 
    ```bash
    uvicorn src.app:app --reload
