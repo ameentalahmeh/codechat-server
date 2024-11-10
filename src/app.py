@@ -15,7 +15,7 @@ app.add_middleware(
 
 @app.get("/")
 async def home():
-    return {"message": "Welcome to the TogetherAI LlamaIndex FastAPI App!"}
+    return {"message": "Welcome to the Code Chat API!"}
 
 @app.post("/api/prompt")
 def process_prompt_endpoint(request: UserPrompt):
