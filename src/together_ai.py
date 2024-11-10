@@ -1,5 +1,6 @@
 import os
 import logging
+from dataclasses import dataclass, field
 from llama_index.llms.together import TogetherLLM
 from llama_index.core.llms import ChatMessage, MessageRole
 from dataclasses import dataclass
@@ -8,7 +9,8 @@ from typing import Optional
 from langdetect import detect
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logLevel = logging.ERROR if os.getenv("ENV") == "prod" else logging.INFO
+logging.basicConfig(level=logLevel, format='%(asctime)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
 
 # Load environment variables early on
@@ -22,9 +24,10 @@ if not TOGETHER_API_KEY or TOGETHER_API_KEY == "":
 
 # Dataclass to hold function input
 @dataclass
-class FunctionInputParams:
-    prompt: str
-    model: str
+class UserPrompt:
+    text: str
+    model: str = "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo"
+    history: list = field(default_factory=list)
 
 # Singleton to reuse the TogetherLLM instance
 class LLMClient:
@@ -48,25 +51,34 @@ def get_system_message(language: str) -> str:
 
 
 # Function to process the prompt and clean up the response
-def process_prompt(input: FunctionInputParams):
+def process_prompt(input: UserPrompt):
     try:
-        log.info(f"Processing prompt: {input.prompt}")
+        log.info(f"Processing prompt: {input.text}")
 
         # Detect the language of the user's input
-        language = detect(input.prompt)
+        language = detect(input.text)
         log.info(f"Detected language: {language}")
 
         # Get the system message without any tone customization
         system_message = get_system_message(language)
 
+        # Get request model
+        model = input.model
+        log.info(f"Detected model: {model}")
+
         # Get the LLM client instance
-        llm = LLMClient.get_instance(input.model)
+        llm = LLMClient.get_instance(model)
 
         # Prepare the messages for the LLM chat
         messages = [
             ChatMessage(role=MessageRole.SYSTEM, content=system_message),
-            ChatMessage(role=MessageRole.USER, content=f"Please provide full description and code samples for '{input.prompt}'."),
+            ChatMessage(role=MessageRole.USER, content=f"Please provide full description and code samples for '{input.text}'."),
         ]
+
+        # Append History messages
+        if len(input.history) > 0:
+            for h in input.history:
+                messages.append(ChatMessage(role=h['role'], content=h['content']))
 
         # Perform the chat operation
         resp = llm.chat(messages)

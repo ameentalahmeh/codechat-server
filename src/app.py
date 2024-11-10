@@ -1,15 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from dataclasses import dataclass
-from together_ai import process_prompt
-
-# Define request model
-@dataclass
-class PromptRequest:
-    prompt: str
-    model: str = "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
-    # model: str = "codellama/CodeLlama-34b-Instruct-hf"
-    # model: str = "codellama/CodeLlama-7b-hf"
+from src.together_ai import process_prompt, UserPrompt
 
 app = FastAPI()
 
@@ -27,7 +18,7 @@ async def home():
     return {"message": "Welcome to the TogetherAI LlamaIndex FastAPI App!"}
 
 @app.post("/api/prompt")
-def process_prompt_endpoint(request: PromptRequest):
+def process_prompt_endpoint(request: UserPrompt):
     try:
         result = process_prompt(request)
         return {"result": result}
